@@ -19,6 +19,10 @@ func (m *Metrics) MeasureSince(key string, start time.Time, labels ...Label) {
 	m.NewTimer(key, labels...).MeasureSince(start)
 }
 
+func (m *Metrics) Observe(key string, val float64, labels ...Label) {
+	m.NewDistribution(key, labels...).Observe(val)
+}
+
 func (m *Metrics) Shutdown() {
 	if m.runtimeMetricsCancel != nil {
 		m.runtimeMetricsCancel()

@@ -149,7 +149,10 @@ type StatValue interface {
 	int | int8 | int32 | int64 | float32 | float64
 }
 
+//
 // Proxy all the methods to the globalMetrics instance
+//
+
 func SetGauge[V StatValue](key string, val V, labels ...Label) {
 	currMetrics().SetGauge(key, float64(val), labels...)
 }
@@ -164,6 +167,10 @@ func Sample[V StatValue](key string, val V, labels ...Label) {
 
 func MeasureSince(key string, start time.Time, labels ...Label) {
 	currMetrics().MeasureSince(key, start, labels...)
+}
+
+func Observe[V StatValue](key string, val V, labels ...Label) {
+	currMetrics().Observe(key, float64(val), labels...)
 }
 
 //
@@ -184,6 +191,10 @@ func NewTimer(key string, labels ...Label) Timer {
 
 func NewHistogram(key string, labels ...Label) Histogram {
 	return currMetrics().NewHistogram(key, labels...)
+}
+
+func NewDistribution(key string, labels ...Label) Distribution {
+	return currMetrics().NewDistribution(key, labels...)
 }
 
 //
