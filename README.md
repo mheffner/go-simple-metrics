@@ -12,6 +12,9 @@ principles for this library.
 **NOTE: This is an early version of this library so caution should be used before using it in
 production. There are no guarantees that breaking changes may not occur in early updates.**
 
+[![GoDoc](https://godoc.org/github.com/mheffner/go-simple-metrics?status.svg)](https://godoc.org/github.com/mheffner/go-simple-metrics)
+
+
 ## Examples
 
 Here is an example of using the package:
