@@ -1,0 +1,22 @@
+name: CICD
+
+on:
+  push
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+
+      # Setup Go
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.18.1' # The Go version to download (if necessary) and use.
+
+      # Run testing on the code
+      - name: Run testing
+        run: make test
