@@ -86,6 +86,10 @@ func Test_GlobalMetrics_Memomized(t *testing.T) {
 	h.Sample(40)
 	h.Sample(50)
 
+	d := NewDistribution("dkey", labels...)
+	d.Observe(100)
+	d.Observe(110)
+
 	require.Equal(t, "gkey", s.keys[0][0])
 	require.Equal(t, "gkey", s.keys[1][0])
 
@@ -119,6 +123,15 @@ func Test_GlobalMetrics_Memomized(t *testing.T) {
 
 	require.Equal(t, labels, s.labels[5])
 	require.Equal(t, labels, s.labels[6])
+
+	require.Equal(t, "dkey", s.keys[7][0])
+	require.Equal(t, "dkey", s.keys[8][0])
+
+	require.Equal(t, float64(100), s.vals[7])
+	require.Equal(t, float64(110), s.vals[8])
+
+	require.Equal(t, labels, s.labels[7])
+	require.Equal(t, labels, s.labels[8])
 }
 
 func Test_GlobalMetrics_DefaultLabels(t *testing.T) {

@@ -126,3 +126,31 @@ func (h *histogram) Sample(val float64) {
 
 	h.emitter(val)
 }
+
+type Distribution interface {
+	Observe(val float64)
+}
+
+type distribution struct {
+	baseMetric
+}
+
+func (m *Metrics) NewDistribution(key string, labels ...Label) Distribution {
+	d := &distribution{}
+	allowed, keys, labels := m.enrich("distribution", key, labels)
+	if !allowed {
+		d.drop = true
+		return d
+	}
+
+	d.emitter = m.sink.BuildMetricEmitter(MetricTypeDistribution, keys, labels)
+	return d
+}
+
+func (d *distribution) Observe(val float64) {
+	if d.drop {
+		return
+	}
+
+	d.emitter(val)
+}

@@ -75,6 +75,12 @@ Timers are a special purpose histogram for tracking time metrics, like latency. 
 method makes it easy to record the time spent since some the start of an event. When invoked with a `defer`
 as the example above shows, it makes it easy to record the time of a code block.
 
+### Distribution: `Observe()`
+
+A distribution is a specific type of histogram that provides some additional quantile flexibility
+and accuracy. It is mostly provided for the Datadog sink, other sinks at the moment implement
+distributions on top of the histogram support.
+
 ## Memoized Metrics
 
 In most scenarios the one-liner methods above should be enough to instrument any block of code quickly
@@ -95,7 +101,8 @@ func pollMessages(messages chan<- string) {
 }
 ```
 
-There are similar methods for all metric types: `NewGauge`, `NewHistogram`, `NewTimer`.
+There are similar methods for all metric types: `NewGauge`, `NewHistogram`, `NewTimer`,
+`NewDistribution`.
 
 ## Persisted and Aggregated Metrics
 
