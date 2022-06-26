@@ -7,10 +7,10 @@ import (
 
 func TestMetrics_Filter_Denylist(t *testing.T) {
 	m := &MockSink{}
-	conf := DefaultConfig("")
-	conf.AllowedPrefixes = []string{"service", "debug.thing"}
-	conf.BlockedPrefixes = []string{"debug"}
-	met, err := New(conf, m)
+	met, err := New(m, func(cfg *Config) {
+		cfg.AllowedPrefixes = []string{"service", "debug.thing"}
+		cfg.BlockedPrefixes = []string{"debug"}
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,12 +55,12 @@ func TestMetrics_Filter_Denylist(t *testing.T) {
 
 func TestMetrics_Filter_Allowlist(t *testing.T) {
 	m := &MockSink{}
-	conf := DefaultConfig("")
-	conf.AllowedPrefixes = []string{"service", "debug.thing"}
-	conf.BlockedPrefixes = []string{"debug"}
-	conf.FilterDefault = false
-	conf.BlockedLabels = []string{"bad_label"}
-	met, err := New(conf, m)
+	met, err := New(m, func(conf *Config) {
+		conf.AllowedPrefixes = []string{"service", "debug.thing"}
+		conf.BlockedPrefixes = []string{"debug"}
+		conf.FilterDefault = false
+		conf.BlockedLabels = []string{"bad_label"}
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -120,14 +120,14 @@ func TestMetrics_Filter_Allowlist(t *testing.T) {
 
 func TestMetrics_Filter_Labels_Allowlist(t *testing.T) {
 	m := &MockSink{}
-	conf := DefaultConfig("")
-	conf.AllowedPrefixes = []string{"service", "debug.thing"}
-	conf.BlockedPrefixes = []string{"debug"}
-	conf.FilterDefault = false
-	conf.AllowedLabels = []string{"good_label"}
-	conf.BlockedLabels = []string{"bad_label"}
-	conf.EnableRuntimeMetrics = false
-	met, err := New(conf, m)
+	met, err := New(m, func(conf *Config) {
+		conf.AllowedPrefixes = []string{"service", "debug.thing"}
+		conf.BlockedPrefixes = []string{"debug"}
+		conf.FilterDefault = false
+		conf.AllowedLabels = []string{"good_label"}
+		conf.BlockedLabels = []string{"bad_label"}
+		conf.EnableRuntimeMetrics = false
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -151,8 +151,15 @@ func TestMetrics_Filter_Labels_Allowlist(t *testing.T) {
 		t.Fatalf("good label is not present in %v", m.labels[0])
 	}
 
-	conf.AllowedLabels = nil
-	met.setFilterAndLabels(conf.AllowedPrefixes, conf.BlockedLabels, conf.AllowedLabels, conf.BlockedLabels)
+	// clear allowed labels
+	met, err = New(m, func(conf *Config) {
+		conf.AllowedPrefixes = []string{"service", "debug.thing"}
+		conf.BlockedPrefixes = []string{"debug"}
+		conf.FilterDefault = false
+		conf.AllowedLabels = nil
+		conf.BlockedLabels = []string{"bad_label"}
+		conf.EnableRuntimeMetrics = false
+	})
 	met.SetGauge(key, 1, labels...)
 
 	if HasElem(m.labels[1], badLabel) {
@@ -169,11 +176,11 @@ func TestMetrics_Filter_Labels_Allowlist(t *testing.T) {
 
 func TestMetrics_Filter_Labels_ModifyArgs(t *testing.T) {
 	m := &MockSink{}
-	conf := DefaultConfig("")
-	conf.FilterDefault = false
-	conf.AllowedLabels = []string{"keep"}
-	conf.BlockedLabels = []string{"delete"}
-	met, err := New(conf, m)
+	met, err := New(m, func(conf *Config) {
+		conf.FilterDefault = false
+		conf.AllowedLabels = []string{"keep"}
+		conf.BlockedLabels = []string{"delete"}
+	})
 	if err != nil {
 		t.Fatal(err)
 	}

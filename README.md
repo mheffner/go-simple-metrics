@@ -30,7 +30,9 @@ func SlowMethod() {
 
 // Configure a statsite sink as the global metrics sink
 sink, _ := metrics.NewStatsiteSink("statsite:8125")
-metrics.NewGlobal(metrics.DefaultConfig("service-name"), sink)
+metrics.NewGlobal(sink, func(cfg *metrics.Config) {
+    cfg.ServiceName = "service-name"
+})
 
 // count an occurrence
 metrics.Incr("method-counter", 1)
