@@ -69,3 +69,79 @@ func TestMetricSinkInterface(t *testing.T) {
 	var dd *DogStatsdSink
 	_ = metrics.MetricSink(dd)
 }
+
+//
+// These benchmarks aren't specific to Datadog, but we use the DD sink to get
+// realistic performance comparisons (vs using the Blackhole Sink)
+//
+
+func BenchmarkSimpleCounter(b *testing.B) {
+	cfg := metrics.DefaultConfig("svcname")
+	cfg.EnableServiceLabel = true
+
+	s, err := NewDogStatsdSink("127.0.0.1:2181", "my-host")
+	if err != nil {
+		panic(err)
+	}
+	met, err := metrics.New(cfg, s)
+	if err != nil {
+		panic(err)
+	}
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		met.Incr("foo", 5, metrics.L("label1", "value1"),
+			metrics.L("label2", "value2"))
+	}
+	b.StopTimer()
+	met.Shutdown()
+}
+
+func BenchmarkMemoizedCounter(b *testing.B) {
+	cfg := metrics.DefaultConfig("svcname")
+	cfg.EnableServiceLabel = true
+
+	s, err := NewDogStatsdSink("127.0.0.1:2181", "my-host")
+	if err != nil {
+		panic(err)
+	}
+	met, err := metrics.New(cfg, s)
+	if err != nil {
+		panic(err)
+	}
+
+	c := met.NewCounter("foo", metrics.L("label1", "value1"), metrics.L("label2", "value2"))
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		c.Incr(5)
+	}
+	b.StopTimer()
+	met.Shutdown()
+}
+
+func BenchmarkAggregatedCounter(b *testing.B) {
+	cfg := metrics.DefaultConfig("svcname")
+	cfg.EnableServiceLabel = true
+
+	s, err := NewDogStatsdSink("127.0.0.1:2181", "my-host")
+	if err != nil {
+		panic(err)
+	}
+	met, err := metrics.New(cfg, s)
+	if err != nil {
+		panic(err)
+	}
+
+	c := met.NewAggregatedCounter("foo", metrics.L("label1", "value1"), metrics.L("label2", "value2"))
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		c.Incr(5)
+	}
+	b.StopTimer()
+	met.Shutdown()
+}

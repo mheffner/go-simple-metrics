@@ -1,10 +1,11 @@
 go-simple-metrics
 ==========
 
-This library provides an opinionated `metrics` package which can be used to instrument code,
+This library provides a simple `metrics` package which can be used to instrument code,
 expose application metrics, and profile runtime performance in a flexible manner. It is derived
 from the fantastic and widely used version of [@armon](https://github.com/armon)'s
-[go-metrics](https://github.com/armon/go-metrics).
+[go-metrics](https://github.com/armon/go-metrics). Several configurable sinks allow metrics to be
+exported to observability systems, often via statsd-like bridges.
 
 See the section on [Design Philosophies](#design-philosophy) below to understand the guiding design
 principles for this library.
@@ -40,12 +41,12 @@ metrics.Sample("queue-latency", 43.5, metrics.L("name", "msgs"), metrics.L("type
 
 ## Sinks
 
-The `metrics` package makes use of a `MetricSink` interface to support delivery
-to any type of backend. Currently, the following sinks are provided:
+The `metrics` package makes use of a [`MetricSink`](https://github.com/mheffner/go-simple-metrics/blob/5dac6bf7a82810e876f0b4b879ede6594b4a4673/sink.go#L18-L22)
+interface to support delivery to any type of backend. Currently, the following sinks are provided:
 
 * StatsiteSink : Sinks to a [statsite](https://github.com/armon/statsite/) instance (TCP)
 * Datadog: Sinks to a DataDog dogstatsd instance.
-* InmemSink : Provides in-memory aggregation, can be used to export stats
+* InmemSink : Provides in-memory aggregation, can be used to export stats or for testing
 * FanoutSink : Sinks to multiple sinks. Enables writing to multiple statsite instances for example.
 * BlackholeSink : Sinks to nowhere
 
@@ -53,7 +54,7 @@ In addition to the sinks, the `InmemSignal` can be used to catch a signal,
 and dump a formatted output of recent metrics. For example, when a process gets
 a SIGUSR1, it can dump to stderr recent performance metrics for debugging.
 
-## Instrumentation Methods
+## Simple Instrumentation Methods
 
 ### Gauge: `SetGauge()`
 
@@ -173,6 +174,21 @@ func pollMessages(messages chan<- string) {
 	c.Stop()
 }
 ```
+
+## Benchmarking
+
+We run three benchmarks comparing the following:
+* `Simple Counter`: running `Incr()` in a loop
+* `Memoized Counter`: creating a counter using `NewCounter()` and testing `counter.Incr()`
+* `Aggregated Counter`: creating an aggregated counter with `NewAggregatedCounter()` and
+testing `counter.Incr()`
+
+```text
+BenchmarkSimpleCounter-8       	 1464144	      1777 ns/op	     827 B/op	      23 allocs/op
+BenchmarkMemoizedCounter-8     	15912382	       162.3 ns/op	       1 B/op	       0 allocs/op
+BenchmarkAggregatedCounter-8   	270646194	         7.880 ns/op	       0 B/op	       0 allocs/op
+```
+
 
 ## Design Philosophy
 
