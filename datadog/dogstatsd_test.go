@@ -7,13 +7,9 @@ import (
 	metrics "github.com/mheffner/go-simple-metrics"
 )
 
-var EmptyTags []metrics.Label
-
 const (
-	DogStatsdAddr    = "127.0.0.1:7254"
-	HostnameEnabled  = true
-	HostnameDisabled = false
-	TestHostname     = "test_hostname"
+	DogStatsdAddr = "127.0.0.1:7254"
+	TestHostname  = "test_hostname"
 )
 
 func MockGetHostname() string {
@@ -76,14 +72,14 @@ func TestMetricSinkInterface(t *testing.T) {
 //
 
 func BenchmarkSimpleCounter(b *testing.B) {
-	cfg := metrics.DefaultConfig("svcname")
-	cfg.EnableServiceLabel = true
-
 	s, err := NewDogStatsdSink("127.0.0.1:2181", "my-host")
 	if err != nil {
 		panic(err)
 	}
-	met, err := metrics.New(cfg, s)
+	met, err := metrics.New(s, func(cfg *metrics.Config) {
+		cfg.ServiceName = "svcname"
+		cfg.EnableServiceLabel = true
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -99,14 +95,14 @@ func BenchmarkSimpleCounter(b *testing.B) {
 }
 
 func BenchmarkMemoizedCounter(b *testing.B) {
-	cfg := metrics.DefaultConfig("svcname")
-	cfg.EnableServiceLabel = true
-
 	s, err := NewDogStatsdSink("127.0.0.1:2181", "my-host")
 	if err != nil {
 		panic(err)
 	}
-	met, err := metrics.New(cfg, s)
+	met, err := metrics.New(s, func(cfg *metrics.Config) {
+		cfg.ServiceName = "svcname"
+		cfg.EnableServiceLabel = true
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -123,14 +119,14 @@ func BenchmarkMemoizedCounter(b *testing.B) {
 }
 
 func BenchmarkAggregatedCounter(b *testing.B) {
-	cfg := metrics.DefaultConfig("svcname")
-	cfg.EnableServiceLabel = true
-
 	s, err := NewDogStatsdSink("127.0.0.1:2181", "my-host")
 	if err != nil {
 		panic(err)
 	}
-	met, err := metrics.New(cfg, s)
+	met, err := metrics.New(s, func(cfg *metrics.Config) {
+		cfg.ServiceName = "svcname"
+		cfg.EnableServiceLabel = true
+	})
 	if err != nil {
 		panic(err)
 	}

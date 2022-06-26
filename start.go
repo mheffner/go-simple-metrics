@@ -67,10 +67,10 @@ func Default() *Metrics {
 	return currMetrics()
 }
 
-// DefaultConfig provides a sane default configuration
-func DefaultConfig(serviceName string) *Config {
+// default configuration
+func defaultConfig() *Config {
 	c := &Config{
-		ServiceName:          serviceName, // Use client provided service
+		ServiceName:          "",
 		HostName:             "",
 		EnableHostnameLabel:  true,             // Enable hostname label
 		EnableRuntimeMetrics: true,             // Enable runtime profiling
@@ -87,16 +87,23 @@ func DefaultConfig(serviceName string) *Config {
 	return c
 }
 
+type ConfigOption func(cfg *Config)
+
 // New is used to create a new instance of Metrics
-func New(conf *Config, sink MetricSink) (*Metrics, error) {
+func New(sink MetricSink, opts ...ConfigOption) (*Metrics, error) {
+	cfg := defaultConfig()
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
 	met := &Metrics{}
-	met.cfg = *conf
+	met.cfg = *cfg
 	met.sink = sink
 	met.persistedGauges = sync.Map{}
-	met.setFilterAndLabels(conf.AllowedPrefixes, conf.BlockedPrefixes, conf.AllowedLabels, conf.BlockedLabels)
+	met.setFilterAndLabels(met.cfg.AllowedPrefixes, met.cfg.BlockedPrefixes, met.cfg.AllowedLabels, met.cfg.BlockedLabels)
 
 	// Start the runtime collector
-	if conf.EnableRuntimeMetrics {
+	if met.cfg.EnableRuntimeMetrics {
 		ctx, cancel := context.WithCancel(context.Background())
 		met.runtimeMetricsCancel = cancel
 		met.runtimeWaitG = sync.WaitGroup{}
@@ -112,7 +119,7 @@ func New(conf *Config, sink MetricSink) (*Metrics, error) {
 	}
 
 	// Start the publishing of persisted metrics
-	if conf.PersistentInterval > 0 {
+	if met.cfg.PersistentInterval > 0 {
 		ctx, cancel := context.WithCancel(context.Background())
 		met.persistedPublishCancel = cancel
 		met.persistedPublishWaitG = sync.WaitGroup{}
@@ -132,8 +139,8 @@ func New(conf *Config, sink MetricSink) (*Metrics, error) {
 
 // NewGlobal is the same as New, but it assigns the metrics object to be
 // used globally as well as returning it.
-func NewGlobal(conf *Config, sink MetricSink) (*Metrics, error) {
-	metrics, err := New(conf, sink)
+func NewGlobal(sink MetricSink, opts ...ConfigOption) (*Metrics, error) {
+	metrics, err := New(sink, opts...)
 	if err == nil {
 		globalMetrics.Store(metrics)
 	}

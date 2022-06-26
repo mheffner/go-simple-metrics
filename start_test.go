@@ -12,8 +12,8 @@ import (
 )
 
 func TestDefaultConfig(t *testing.T) {
-	conf := DefaultConfig("service")
-	if conf.ServiceName != "service" {
+	conf := defaultConfig()
+	if conf.ServiceName != "" {
 		t.Fatalf("Bad name")
 	}
 	if conf.HostName == "" {
