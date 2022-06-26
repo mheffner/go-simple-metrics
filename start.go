@@ -154,46 +154,56 @@ type StatValue interface {
 // Proxy all the methods to the globalMetrics instance
 //
 
+// SetGauge records the current observed value
 func SetGauge[V StatValue](key string, val V, labels ...Label) {
 	currMetrics().SetGauge(key, float64(val), labels...)
 }
 
+// Incr increments a counter
 func Incr[V StatValue](key string, val V, labels ...Label) {
 	currMetrics().Incr(key, float64(val), labels...)
 }
 
+// Sample records an observation in a histogram
 func Sample[V StatValue](key string, val V, labels ...Label) {
 	currMetrics().Sample(key, float64(val), labels...)
 }
 
+// MeasureSince records the time elapsed since an event, often as a histogram
 func MeasureSince(key string, start time.Time, labels ...Label) {
 	currMetrics().MeasureSince(key, start, labels...)
 }
 
+// Observe records an observation as part of a distribution
 func Observe[V StatValue](key string, val V, labels ...Label) {
 	currMetrics().Observe(key, float64(val), labels...)
 }
 
 //
-// memomized versions
+// Memoized versions
 //
 
+// NewGauge creates a memoized gauge
 func NewGauge(key string, labels ...Label) Gauge {
 	return currMetrics().NewGauge(key, labels...)
 }
 
+// NewCounter creates a memoized counter
 func NewCounter(key string, labels ...Label) Counter {
 	return currMetrics().NewCounter(key, labels...)
 }
 
+// NewTimer creates a memoized timer
 func NewTimer(key string, labels ...Label) Timer {
 	return currMetrics().NewTimer(key, labels...)
 }
 
+// NewHistogram creates a memoized histogram
 func NewHistogram(key string, labels ...Label) Histogram {
 	return currMetrics().NewHistogram(key, labels...)
 }
 
+// NewDistribution creates a memoized histogram
 func NewDistribution(key string, labels ...Label) Distribution {
 	return currMetrics().NewDistribution(key, labels...)
 }
