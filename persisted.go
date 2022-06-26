@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+// A PersistentGauge maintains an observed value internally and publish the last
+// seen value on the publishing interval. The behavior is the same as using the
+// SetGauge method, however instead of each call posting a value to the sink and
+// the sink (e.g. agent) keeping the last value, this happens before the sink.
 type PersistentGauge interface {
 	Stop()
 	Set(val int64) int64
@@ -51,6 +55,9 @@ func (p *persistentGauge) report() {
 	p.gauge.Set(float64(curr))
 }
 
+// An AggregatedCounter can be useful for extremely hot-path metric instrumentation. It aggregates the total
+// increment delta internally and publishes the current delta on each report interval. Unlike the PersistentGauge,
+// an AggregatedCounter will reset its value to zero on each reporting interval.
 type AggregatedCounter interface {
 	Stop()
 	Incr(delta int64)

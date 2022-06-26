@@ -4,6 +4,8 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 type testOptConf func(c *Config)
@@ -19,6 +21,24 @@ func mockMetric(t *testing.T, opts ...testOptConf) (*MockSink, *Metrics) {
 		met.Shutdown()
 	})
 	return m, met
+}
+
+func TestMetrics_BaseLabels(t *testing.T) {
+	labels := []Label{
+		L("dog", "cat"),
+		L("coffee", "tea"),
+	}
+
+	m, met := mockMetric(t, func(c *Config) {
+		c.BaseLabels = labels
+	})
+
+	met.SetGauge("gkey", 1, L("gauge", "label"))
+
+	all := append([]Label{L("gauge", "label")}, labels...)
+
+	require.Len(t, m.labels[0], 3)
+	require.Equal(t, all, m.labels[0])
 }
 
 func TestMetrics_SetGauge(t *testing.T) {
@@ -59,9 +79,7 @@ func TestMetrics_SetGauge(t *testing.T) {
 		c.ServiceName = "service"
 	})
 	met.SetGauge("key", float64(1))
-	if m.getKeys()[0][0] != "service" || m.getKeys()[0][1] != "key" {
-		t.Fatalf("")
-	}
+	require.Equal(t, "key", m.getKeys()[0][0])
 	if m.vals[0] != 1 {
 		t.Fatalf("")
 	}
@@ -105,9 +123,7 @@ func TestMetrics_Incr(t *testing.T) {
 		c.ServiceName = "service"
 	})
 	met.Incr("key", float64(1))
-	if m.getKeys()[0][0] != "service" || m.getKeys()[0][1] != "key" {
-		t.Fatalf("")
-	}
+	require.Equal(t, "key", m.getKeys()[0][0])
 	if m.vals[0] != 1 {
 		t.Fatalf("")
 	}
@@ -151,9 +167,7 @@ func TestMetrics_Sample(t *testing.T) {
 		c.ServiceName = "service"
 	})
 	met.Sample("key", float64(1))
-	if m.getKeys()[0][0] != "service" || m.getKeys()[0][1] != "key" {
-		t.Fatalf("")
-	}
+	require.Equal(t, "key", m.getKeys()[0][0])
 	if m.vals[0] != 1 {
 		t.Fatalf("")
 	}
@@ -203,9 +217,7 @@ func TestMetrics_MeasureSince(t *testing.T) {
 		c.ServiceName = "service"
 	})
 	met.MeasureSince("key", time.Now())
-	if m.getKeys()[0][0] != "service" || m.getKeys()[0][1] != "key" {
-		t.Fatalf("")
-	}
+	require.Equal(t, "key", m.getKeys()[0][0])
 	if m.vals[0] > 0.5 {
 		t.Fatalf("value is greater than 0.1: %f", m.vals[0])
 	}

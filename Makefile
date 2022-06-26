@@ -1,4 +1,4 @@
-.PHONY: test vtest deps tidy
+.PHONY: test vtest deps tidy bench
 
 all:
 
@@ -13,3 +13,6 @@ deps:
 
 tidy:
 	go mod tidy
+
+bench:
+	go test -bench=. -count 1 -run=^# -benchtime=2s ./...
