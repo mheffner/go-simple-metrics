@@ -2,6 +2,7 @@ package datadog
 
 import (
 	"net"
+	"strings"
 	"testing"
 
 	metrics "github.com/mheffner/go-simple-metrics"
@@ -56,8 +57,10 @@ func assertServerMatchesExpected(t *testing.T, server *net.UDPConn, buf []byte, 
 	t.Helper()
 	n, _ := server.Read(buf)
 	msg := buf[:n]
-	if string(msg) != expected {
-		t.Fatalf("Line %s does not match expected: %s", string(msg), expected)
+
+	// New Dogstatsd adds a container ID, so we check the prefix for a match
+	if !strings.HasPrefix(string(msg), expected) {
+		t.Fatalf("Line `%s` does not start with expected: `%s`", string(msg), expected)
 	}
 }
 
