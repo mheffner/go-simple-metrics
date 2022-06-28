@@ -186,9 +186,9 @@ We run three benchmarks comparing the following:
 testing `counter.Incr()`
 
 ```text
-BenchmarkSimpleCounter-8       	 1464144	      1777 ns/op	     827 B/op	      23 allocs/op
-BenchmarkMemoizedCounter-8     	15912382	       162.3 ns/op	       1 B/op	       0 allocs/op
-BenchmarkAggregatedCounter-8   	270646194	         7.880 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSimpleCounter-8       	 1503106	      1593 ns/op	     904 B/op	      24 allocs/op
+BenchmarkMemoizedCounter-8     	24951338	        93.65 ns/op	      80 B/op	       1 allocs/op
+BenchmarkAggregatedCounter-8   	388790562	         6.050 ns/op	       0 B/op	       0 allocs/op
 ```
 
 
