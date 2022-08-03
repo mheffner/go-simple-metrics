@@ -195,21 +195,21 @@ BenchmarkAggregatedCounter-8   	388790562	         6.050 ns/op	       0 B/op	   
 
 ## Design Philosophy
 
-This library draws on a few philosophies which we believe are required for modern metrics
+This library draws on a few principles required for modern metrics
 instrumentation and observability.
 
 ### Metrics are multidimensional
 
 Call them tags or labels, but multidimensional metrics are the standard and observability systems
 must treat them as first-class citizens. Similarly, they should be the default for instrumentation
-libraries, allowing the ability to configure them globally (infra dimensions) as well as per-metric
-based on application context.
+libraries, allowing the ability to configure them globally (e.g., enriched with infra dimensions)
+as well as per-metric based on application context.
 
 ### Instrumentation should be succinct
 
 Instrumenting code should not distract from the content of the code itself. It should be clear
 to a reviewer where and how the code has been instrumented, but readability of the application
-must be maintained.
+must not be sacrificed.
 
 ### Quick to instrument
 
