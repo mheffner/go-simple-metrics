@@ -48,6 +48,7 @@ interface to support delivery to any type of backend. Currently, the following s
 
 * StatsiteSink : Sinks to a [statsite](https://github.com/armon/statsite/) instance (TCP)
 * Datadog: Sinks to a DataDog dogstatsd instance.
+* PrometheusSink: Sinks to a [Prometheus](http://prometheus.io/) metrics endpoint (exposed via HTTP for scrapes)
 * InmemSink : Provides in-memory aggregation, can be used to export stats or for testing
 * FanoutSink : Sinks to multiple sinks. Enables writing to multiple statsite instances for example.
 * BlackholeSink : Sinks to nowhere
