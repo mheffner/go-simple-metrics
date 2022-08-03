@@ -85,7 +85,7 @@ func (c *expirableMetric) markUpdated() {
 
 // GaugeDefinition can be provided to PrometheusOpts to declare a constant gauge that is not deleted on expiry.
 type GaugeDefinition struct {
-	Name        []string
+	Name        string
 	ConstLabels []metrics.Label
 	Help        string
 }
@@ -97,7 +97,7 @@ type gauge struct {
 
 // SummaryDefinition can be provided to PrometheusOpts to declare a constant summary that is not deleted on expiry.
 type SummaryDefinition struct {
-	Name        []string
+	Name        string
 	ConstLabels []metrics.Label
 	Help        string
 }
@@ -109,7 +109,7 @@ type summary struct {
 
 // CounterDefinition can be provided to PrometheusOpts to declare a constant counter that is not deleted on expiry.
 type CounterDefinition struct {
-	Name        []string
+	Name        string
 	ConstLabels []metrics.Label
 	Help        string
 }
@@ -397,7 +397,7 @@ func (p *PrometheusSink) collectAtTime(c chan<- prometheus.Metric, t time.Time) 
 
 func initGauges(m *sync.Map, gauges []GaugeDefinition, help map[string]string) {
 	for _, g := range gauges {
-		key, hash := flattenKey(g.Name, g.ConstLabels)
+		key, hash := flattenKey([]string{g.Name}, g.ConstLabels)
 		help[fmt.Sprintf("gauge.%s", key)] = g.Help
 		pG := prometheus.NewGauge(prometheus.GaugeOpts{
 			Name:        key,
@@ -411,7 +411,7 @@ func initGauges(m *sync.Map, gauges []GaugeDefinition, help map[string]string) {
 
 func initSummaries(m *sync.Map, summaries []SummaryDefinition, help map[string]string) {
 	for _, s := range summaries {
-		key, hash := flattenKey(s.Name, s.ConstLabels)
+		key, hash := flattenKey([]string{s.Name}, s.ConstLabels)
 		help[fmt.Sprintf("summary.%s", key)] = s.Help
 		pS := prometheus.NewSummary(prometheus.SummaryOpts{
 			Name:        key,
@@ -427,7 +427,7 @@ func initSummaries(m *sync.Map, summaries []SummaryDefinition, help map[string]s
 
 func initCounters(m *sync.Map, counters []CounterDefinition, help map[string]string) {
 	for _, c := range counters {
-		key, hash := flattenKey(c.Name, c.ConstLabels)
+		key, hash := flattenKey([]string{c.Name}, c.ConstLabels)
 		help[fmt.Sprintf("counter.%s", key)] = c.Help
 		pC := prometheus.NewCounter(prometheus.CounterOpts{
 			Name:        key,

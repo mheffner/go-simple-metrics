@@ -58,7 +58,7 @@ func TestNewPrometheusSink(t *testing.T) {
 // TestMultiplePrometheusSink tests registering multiple sinks on the same registerer with different descriptors
 func TestMultiplePrometheusSink(t *testing.T) {
 	gaugeDef := GaugeDefinition{
-		Name: []string{"my", "test", "gauge"},
+		Name: "my.test.gauge",
 		Help: "A gauge for testing? How helpful!",
 	}
 
@@ -81,7 +81,7 @@ func TestMultiplePrometheusSink(t *testing.T) {
 	}
 
 	gaugeDef2 := GaugeDefinition{
-		Name: []string{"my2", "test", "gauge"},
+		Name: "my2.test.gauge",
 		Help: "A gauge for testing? How helpful!",
 	}
 
@@ -113,15 +113,15 @@ func TestMultiplePrometheusSink(t *testing.T) {
 
 func TestDefinitions(t *testing.T) {
 	gaugeDef := GaugeDefinition{
-		Name: []string{"my", "test", "gauge"},
+		Name: "my.test.gauge",
 		Help: "A gauge for testing? How helpful!",
 	}
 	summaryDef := SummaryDefinition{
-		Name: []string{"my", "test", "summary"},
+		Name: "my.test.summary",
 		Help: "A summary for testing? How helpful!",
 	}
 	counterDef := CounterDefinition{
-		Name: []string{"my", "test", "counter"},
+		Name: "my.test.counter",
 		Help: "A counter for testing? How helpful!",
 	}
 
@@ -142,21 +142,21 @@ func TestDefinitions(t *testing.T) {
 	// definition matches the key we have for the map entry. Should fail if any metrics exist that aren't defined, or if
 	// the defined metrics don't exist.
 	sink.gauges.Range(func(key, value interface{}) bool {
-		name, _ := flattenKey(gaugeDef.Name, gaugeDef.ConstLabels)
+		name, _ := flattenKey([]string{gaugeDef.Name}, gaugeDef.ConstLabels)
 		if name != key {
 			t.Fatalf("expected my_test_gauge, got #{name}")
 		}
 		return true
 	})
 	sink.summaries.Range(func(key, value interface{}) bool {
-		name, _ := flattenKey(summaryDef.Name, summaryDef.ConstLabels)
+		name, _ := flattenKey([]string{summaryDef.Name}, summaryDef.ConstLabels)
 		if name != key {
 			t.Fatalf("expected my_test_summary, got #{name}")
 		}
 		return true
 	})
 	sink.counters.Range(func(key, value interface{}) bool {
-		name, _ := flattenKey(counterDef.Name, counterDef.ConstLabels)
+		name, _ := flattenKey([]string{counterDef.Name}, counterDef.ConstLabels)
 		if name != key {
 			t.Fatalf("expected my_test_counter, got #{name}")
 		}
@@ -164,9 +164,9 @@ func TestDefinitions(t *testing.T) {
 	})
 
 	// Set a bunch of values
-	sink.BuildMetricEmitter(metrics.MetricTypeGauge, gaugeDef.Name, []metrics.Label{})(42)
-	sink.BuildMetricEmitter(metrics.MetricTypeHistogram, summaryDef.Name, []metrics.Label{})(42)
-	sink.BuildMetricEmitter(metrics.MetricTypeCounter, counterDef.Name, []metrics.Label{})(1)
+	sink.BuildMetricEmitter(metrics.MetricTypeGauge, []string{gaugeDef.Name}, []metrics.Label{})(42)
+	sink.BuildMetricEmitter(metrics.MetricTypeHistogram, []string{summaryDef.Name}, []metrics.Label{})(42)
+	sink.BuildMetricEmitter(metrics.MetricTypeCounter, []string{counterDef.Name}, []metrics.Label{})(1)
 
 	// Test that the expiry behavior works as expected. First pick a time which
 	// is after all the actual updates above.
@@ -310,15 +310,15 @@ func TestSetGauge(t *testing.T) {
 
 func TestDefinitionsWithLabels(t *testing.T) {
 	gaugeDef := GaugeDefinition{
-		Name: []string{"my", "test", "gauge"},
+		Name: "my.test.gauge",
 		Help: "A gauge for testing? How helpful!",
 	}
 	summaryDef := SummaryDefinition{
-		Name: []string{"my", "test", "summary"},
+		Name: "my.test.summary",
 		Help: "A summary for testing? How helpful!",
 	}
 	counterDef := CounterDefinition{
-		Name: []string{"my", "test", "counter"},
+		Name: "my.test.counter",
 		Help: "A counter for testing? How helpful!",
 	}
 
@@ -338,7 +338,7 @@ func TestDefinitionsWithLabels(t *testing.T) {
 		t.Fatalf("Expected len(sink.help) to be 3, was %d: %#v", len(sink.help), sink.help)
 	}
 
-	sink.BuildMetricEmitter(metrics.MetricTypeGauge, gaugeDef.Name, []metrics.Label{
+	sink.BuildMetricEmitter(metrics.MetricTypeGauge, []string{gaugeDef.Name}, []metrics.Label{
 		{Name: "version", Value: "some info"},
 	})(42.0)
 	sink.gauges.Range(func(key, value interface{}) bool {
@@ -349,7 +349,7 @@ func TestDefinitionsWithLabels(t *testing.T) {
 		return true
 	})
 
-	sink.BuildMetricEmitter(metrics.MetricTypeHistogram, summaryDef.Name, []metrics.Label{
+	sink.BuildMetricEmitter(metrics.MetricTypeHistogram, []string{summaryDef.Name}, []metrics.Label{
 		{Name: "version", Value: "some info"},
 	})(42.0)
 	sink.summaries.Range(func(key, value interface{}) bool {
@@ -360,7 +360,7 @@ func TestDefinitionsWithLabels(t *testing.T) {
 		return true
 	})
 
-	sink.BuildMetricEmitter(metrics.MetricTypeCounter, counterDef.Name, []metrics.Label{
+	sink.BuildMetricEmitter(metrics.MetricTypeCounter, []string{counterDef.Name}, []metrics.Label{
 		{Name: "version", Value: "some info"},
 	})(42.0)
 	sink.counters.Range(func(key, value interface{}) bool {
