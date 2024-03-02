@@ -1,0 +1,11 @@
+# .kodiak.toml
+# Minimal config. version is the only required field.
+version = 1
+
+[merge]
+blocking_labels = ["wip", "do-not-merge"]
+notify_on_conflict = false
+
+[update]
+always = true
+ignored_usernames = ["dependabot", "renovate"]

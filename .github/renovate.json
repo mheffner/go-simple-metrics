@@ -5,6 +5,7 @@
   ],
   "postUpdateOptions": ["gomodTidy"],
   "labels": ["renovatebot"],
+  "rebaseWhen": "auto",
   "prBodyNotes": [
     "{{#if isMajor}}:warning: MAJOR MAJOR MAJOR :warning:{{/if}}"
   ],
