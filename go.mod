@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/DataDog/datadog-go/v5 v5.1.1
-	github.com/golang/protobuf v1.5.2
+	github.com/golang/protobuf v1.5.3
 	github.com/hashicorp/go-immutable-radix v1.0.0
 	github.com/pascaldekloe/goe v0.1.0
 	github.com/prometheus/client_golang v1.12.2
