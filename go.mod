@@ -6,7 +6,7 @@ require (
 	github.com/DataDog/datadog-go/v5 v5.1.1
 	github.com/golang/protobuf v1.5.3
 	github.com/hashicorp/go-immutable-radix v1.0.0
-	github.com/pascaldekloe/goe v0.1.0
+	github.com/pascaldekloe/goe v0.1.1
 	github.com/prometheus/client_golang v1.12.2
 	github.com/prometheus/client_model v0.2.0
 	github.com/prometheus/common v0.32.1
