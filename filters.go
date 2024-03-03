@@ -3,7 +3,7 @@ package metrics
 import (
 	"strings"
 
-	iradix "github.com/hashicorp/go-immutable-radix"
+	iradix "github.com/hashicorp/go-immutable-radix/v2"
 )
 
 // setFilterAndLabels overwrites the existing filter with the given rules.
@@ -27,7 +27,7 @@ func (m *Metrics) setFilterAndLabels(allow, block, allowedLabels, blockedLabels 
 	m.cfg.AllowedLabels = allowedLabels
 	m.cfg.BlockedLabels = blockedLabels
 
-	m.filter = iradix.New()
+	m.filter = iradix.New[bool]()
 	for _, prefix := range m.cfg.AllowedPrefixes {
 		m.filter, _, _ = m.filter.Insert([]byte(prefix), true)
 	}
@@ -82,5 +82,5 @@ func (m *Metrics) allowMetric(key []string, labels []Label) (bool, []Label) {
 		return m.cfg.FilterDefault, m.filterLabels(labels)
 	}
 
-	return allowed.(bool), m.filterLabels(labels)
+	return allowed, m.filterLabels(labels)
 }

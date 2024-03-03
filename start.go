@@ -7,7 +7,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	iradix "github.com/hashicorp/go-immutable-radix"
+	iradix "github.com/hashicorp/go-immutable-radix/v2"
 )
 
 // Config is used to configure metrics settings
@@ -42,7 +42,7 @@ type Label struct {
 type Metrics struct {
 	cfg           Config
 	sink          MetricSink
-	filter        *iradix.Tree
+	filter        *iradix.Tree[bool]
 	allowedLabels map[string]bool
 	blockedLabels map[string]bool
 
