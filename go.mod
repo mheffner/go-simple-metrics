@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/go-immutable-radix/v2 v2.1.0
 	github.com/pascaldekloe/goe v0.1.1
 	github.com/prometheus/client_golang v1.12.2
-	github.com/prometheus/client_model v0.2.0
+	github.com/prometheus/client_model v0.6.0
 	github.com/prometheus/common v0.32.1
 	github.com/stretchr/testify v1.9.0
 )
@@ -25,6 +25,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	golang.org/x/sys v0.1.0 // indirect
-	google.golang.org/protobuf v1.26.0 // indirect
+	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
