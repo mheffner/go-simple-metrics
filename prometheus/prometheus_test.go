@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -244,7 +243,7 @@ func fakeServer(q chan string) *httptest.Server {
 		w.WriteHeader(202)
 		w.Header().Set("Content-Type", "application/json")
 		defer r.Body.Close()
-		dec := expfmt.NewDecoder(r.Body, expfmt.FmtProtoDelim)
+		dec := expfmt.NewDecoder(r.Body, expfmt.NewFormat(expfmt.TypeProtoDelim))
 		m := &dto.MetricFamily{}
 		if err := dec.Decode(m); err != nil {
 			panic(err)
@@ -271,7 +270,8 @@ func fakeServer(q chan string) *httptest.Server {
 				},
 			},
 		}
-		if !reflect.DeepEqual(m, expectedm) {
+
+		if !cmpMetric(m, expectedm) {
 			msg := fmt.Sprintf("Unexpected samples extracted, got: %+v, want: %+v", m, expectedm)
 			q <- errors.New(msg).Error()
 		} else {
@@ -280,6 +280,50 @@ func fakeServer(q chan string) *httptest.Server {
 	}
 
 	return httptest.NewServer(http.HandlerFunc(handler))
+}
+
+func cmpMetric(a *dto.MetricFamily, b *dto.MetricFamily) bool {
+	if a.GetName() != b.GetName() {
+		return false
+	}
+
+	if a.GetHelp() != b.GetHelp() {
+		return false
+	}
+
+	if a.GetType() != b.GetType() {
+		return false
+	}
+
+	if len(a.GetMetric()) != len(b.GetMetric()) {
+		return false
+	}
+
+	aM := a.GetMetric()[0]
+	bM := b.GetMetric()[0]
+
+	if len(aM.GetLabel()) != len(bM.GetLabel()) {
+		return false
+	}
+
+	aL := aM.GetLabel()
+	bL := bM.GetLabel()
+
+	if aL[0].GetName() != bL[0].GetName() ||
+		aL[0].GetValue() != bL[0].GetValue() {
+		return false
+	}
+
+	if aL[1].GetName() != bL[1].GetName() ||
+		aL[1].GetValue() != bL[1].GetValue() {
+		return false
+	}
+
+	if aM.GetGauge().GetValue() != bM.GetGauge().GetValue() {
+		return false
+	}
+
+	return true
 }
 
 func TestSetGauge(t *testing.T) {
@@ -302,9 +346,16 @@ func TestSetGauge(t *testing.T) {
 		t.Fatalf("could not construct metrics: %v", err)
 	}
 	m.SetGauge("one.two", 42)
-	response := <-q
-	if response != "ok" {
-		t.Fatal(response)
+
+	timeout := time.NewTimer(5 * time.Second)
+	defer timeout.Stop()
+	select {
+	case <-timeout.C:
+		t.Fatal("timed out waiting for response")
+	case response := <-q:
+		if response != "ok" {
+			t.Fatal(response)
+		}
 	}
 }
 
