@@ -11,7 +11,7 @@ require (
 	github.com/pascaldekloe/goe v0.1.1
 	github.com/prometheus/client_golang v1.19.0
 	github.com/prometheus/client_model v0.6.0
-	github.com/prometheus/common v0.50.0
+	github.com/prometheus/common v0.51.0
 	github.com/stretchr/testify v1.9.0
 )
 
