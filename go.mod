@@ -2,7 +2,7 @@ module github.com/mheffner/go-simple-metrics
 
 go 1.21
 
-toolchain go1.21.7
+toolchain go1.23.2
 
 require (
 	github.com/DataDog/datadog-go/v5 v5.5.0
