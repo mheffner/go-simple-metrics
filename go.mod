@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.7
 
 require (
-	github.com/DataDog/datadog-go/v5 v5.5.0
+	github.com/DataDog/datadog-go/v5 v5.6.0
 	github.com/golang/protobuf v1.5.3
 	github.com/hashicorp/go-immutable-radix/v2 v2.1.0
 	github.com/pascaldekloe/goe v0.1.1
