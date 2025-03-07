@@ -7,7 +7,7 @@ require (
 	github.com/golang/protobuf v1.5.3
 	github.com/hashicorp/go-immutable-radix/v2 v2.1.0
 	github.com/pascaldekloe/goe v0.1.1
-	github.com/prometheus/client_golang v1.20.4
+	github.com/prometheus/client_golang v1.21.1
 	github.com/prometheus/client_model v0.6.1
 	github.com/prometheus/common v0.62.0
 	github.com/stretchr/testify v1.10.0
