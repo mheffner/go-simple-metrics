@@ -3,7 +3,7 @@ module github.com/mheffner/go-simple-metrics
 go 1.23.0
 
 require (
-	github.com/DataDog/datadog-go/v5 v5.7.0
+	github.com/DataDog/datadog-go/v5 v5.7.1
 	github.com/golang/protobuf v1.5.4
 	github.com/hashicorp/go-immutable-radix/v2 v2.1.0
 	github.com/pascaldekloe/goe v0.1.1
